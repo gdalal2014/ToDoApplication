@@ -1,0 +1,227 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using Slalom_To_Do_Application.Database
+@using System.Collections.Generic
+
+@{
+    var userEntityModel = ViewData["User_Model"] as IEnumerable<UserEntity>;
+    var todoEntityModel = ViewData["ToDo_Model"] as IEnumerable<ToDoEntity>;
+
+}
+@using (Html.BeginForm("selectUser", "Home", FormMethod.Post))
+{
+<div class="text-center">
+    <table id="usertable" class="display">
+        <thead>
+            <tr>
+                <th>Selection</th>
+                <th>User ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Creation Date</th>
+                <th>Modified Date</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int isCheckedUser = 0;
+                var isCheckedUserBool = true;
+            }
+            @foreach (var userEntity in userEntityModel)
+            {
+                
+
+                        if (isCheckedUser != 0)
+                        {
+                            isCheckedUserBool = false;
+                        }
+                <tr>
+                    <td>@Html.RadioButton("User",userEntity.user_id.ToString(), isCheckedUserBool)</td>
+                    <td>@userEntity.user_id.ToString()</td>
+                    <td>@userEntity.user_first_name.ToString()</td>
+                    <td>@userEntity.user_last_name.ToString()</td>
+                    <td>@userEntity.create_date.ToString()</td>
+                    <td>@userEntity.modified_date.ToString()</td>
+                    <td><Button type="button" id="editUserBtn{@userEntity.user_id.ToString()}" class="btn btn-primary" onclick="populateEditUser('@userEntity.user_id.ToString()', '@userEntity.user_first_name.ToString()', '@userEntity.user_last_name.ToString()')">Edit User</Button></td>
+                </tr>
+       
+                    isCheckedUser++;
+            }
+        </tbody>
+    </table>
+    <Button type="submit" id="selectUserbtn" class="btn btn-primary">Select User</Button>
+    <Button type="button" id="selectUserbtnAdd" class="btn btn-primary">Add User</Button>
+</div>
+}
+
+@using (Html.BeginForm("addUser", "Home", FormMethod.Post))
+{
+<div id ="addUser" style="display: none;" class="text-center">
+    <h2>Add User</h2>
+    <br/>
+    First Name: <input id="firstName" name="firstName" type="text" value="" required/> <br />
+    Last Name: <input id="lastName" name="lastName" type="text" value="" required/> <br />
+    <br />
+    <Button type="submit" id="addUserBtn" class="btn btn-primary">Complete Adding User</Button>
+   
+</div>
+ }
+
+ @using (Html.BeginForm("editUser", "Home", FormMethod.Post))
+{
+<div id ="editUser" style="display: none;" class="text-center">
+    <h2>Edit User</h2>
+    <br/>
+    <h3>User ID: <label id = "userIdLbl"></label></h3>
+    First Name: <input id="firstNameEdit" name="firstNameEdit" type="text" value="" required/> <br />
+    Last Name: <input id="lastNameEdit" name="lastNameEdit" type="text" value="" required/> <br />
+    <input type="hidden" name="userIdHidden" id="userIdHidden">
+    <br />
+    <Button type="submit" id="completeEditUserBtn" class="btn btn-primary">Complete Editing User</Button>
+   
+</div>
+ }
+
+@if (todoEntityModel != null)
+{
+    @using (Html.BeginForm("completeToDoItem", "Home", FormMethod.Post))
+    {
+        <div class="text-center">
+            <table id="todotable" class="display">
+                <thead>
+                    <tr>
+                        <th>Selection</th>
+                        <th>User ID</th>
+                        <th>List ID</th>
+                        <th>Item</th>
+                        <th>Is Completed?</th>
+                        <th>Completion Date</th>
+                        <th>Creation Date</th>
+                        <th>Modified Date</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int isCheckedToDoItem = 0;
+                        var isCheckedToDoItemBool = true;
+                    }
+                    @foreach (var todoEntity in todoEntityModel)
+                    {
+                        if (isCheckedToDoItem != 0)
+                        {
+                            isCheckedToDoItemBool = false;
+                        }
+                        <tr>
+                            <td>@Html.RadioButton("todoListId",todoEntity.list_id.ToString(), isCheckedToDoItemBool)</td>
+                            <td>@todoEntity.user_id.ToString()</td>
+                            <td>@todoEntity.list_id.ToString()</td>
+                            <td>@todoEntity.item.ToString()</td>
+                            <td>@todoEntity.is_completed.ToString()</td>
+                            <td>@todoEntity.completion_date.ToString()</td>
+                            <td>@todoEntity.create_date.ToString()</td>
+                            <td>@todoEntity.modified_date.ToString()</td>
+                            <input type="hidden" name="userIdHiddenInput" id="userIdHiddenInput" value="@todoEntity.user_id.ToString()">
+                            <td><Button type="button" id="editToDoBtn{@todoEntity.list_id.ToString()}" class="btn btn-primary" onclick="populateEditTask('@todoEntity.user_id.ToString()', '@todoEntity.list_id.ToString()', '@todoEntity.item.ToString()', '@todoEntity.is_completed.ToString()','@todoEntity.completion_date.ToString()')">Edit To Do Item</Button></td>
+
+                        </tr>
+                        isCheckedToDoItem++;
+                    }
+                </tbody>
+            </table>
+            <Button type="button" id="addToDoItemBtn" name="addToDoItemBtn" class="btn btn-primary">Add To Do Item</Button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Button type="submit" id="ToDoItemCompletedBtn" name="ToDoItemCompletedBtn" class="btn btn-primary">Selected To Do Item Completed</Button>
+        </div>
+    }
+}
+
+@using (Html.BeginForm("addToDoItem", "Home", FormMethod.Post))
+{
+<div id ="addToDoItemDiv" style="display: none;" class="text-left">
+    <br/><br />
+    <center><h2>Add New To Do Item</h2></center>
+    <br/>
+    Item: <input id="item" name="item" type="text" value="" required/> <br />
+    Completed: @Html.RadioButton("todoCompleted","Y") Yes &nbsp;&nbsp; @Html.RadioButton("todoCompleted","N", true) No  <br />
+    Completion Date: <input id="completionDate" name="completionDate" type="date" value="" required/>
+    <input type="hidden" name="userIdHidden" id="userIdHidden" value="@userEntityModel.First().user_id">
+    <br /> <br />
+    <Button type="submit" id="addToDoItemCompleteBtn" class="btn btn-primary">Complete Adding To Do Item</Button>
+   
+</div>
+ }
+
+ @using (Html.BeginForm("editToDoItem", "Home", FormMethod.Post))
+{
+<div id ="editToDoItem" style="display: none;" class="text-left">
+    <br/><br/>
+    <center><h2>Edit To Do Item</h2></center>
+    <br/>
+    <h3>User ID: <label id = "userIdToDoLbl"></label></h3>
+    <h3>List ID: <label id = "listIdToDoLbl"></label></h3>
+    Item: <input id="editItemToDo" name="editItemToDo" type="text" value="" required/> <br />
+    Completed: @Html.RadioButton("editToDoCompleted","Y", new { @id = "completedRB" }) Yes &nbsp;&nbsp; @Html.RadioButton("editToDoCompleted","N", new { @id = "notCompletedRB" }) No  <br />
+    Completion Date: <input id="editCompletionDate" name="editCompletionDate" type="date" value="" required/>
+    <input type="hidden" name="editUserIdHidden" id="editUserIdHidden" value = "@userEntityModel.First().user_id"> 
+     <input type="hidden" name="editListIdHidden" id="editListIdHidden">
+    <br /> <br />
+    <Button type="submit" id="completeEditToDoBtn" class="btn btn-primary">Complete Editing Item</Button>
+   
+</div>
+ }
+
+
+<script>
+
+$(document).ready(function() {
+    var table = $('#usertable').DataTable();
+    var table2 = $('#todotable').DataTable();
+
+    $('#selectUserbtnAdd').click(function () {
+        var elem = document.getElementById('addUser');
+        $(elem).toggle();
+    });
+
+    $('#addToDoItemBtn').click(function () {
+        var elem = document.getElementById('addToDoItemDiv');
+        $(elem).toggle();
+    });
+
+});
+
+function populateEditUser(val, fName, lName)
+{
+    var elem = document.getElementById('editUser');
+    $(elem).toggle();
+    var x = document.getElementById("userIdLbl");
+    x.innerHTML = val;
+    document.getElementById("firstNameEdit").value = fName;
+    document.getElementById("lastNameEdit").value = lName;
+    document.getElementById("userIdHidden").value = val;
+
+}
+
+function populateEditTask(user_id_val, list_id_val, item_val, is_completed_val, completion_date_val)
+{
+     var elem = document.getElementById('editToDoItem');
+    $(elem).toggle();
+    var x = document.getElementById("userIdToDoLbl");
+    x.innerHTML = user_id_val;
+    var y = document.getElementById("listIdToDoLbl");
+    y.innerHTML = list_id_val;
+    document.getElementById("editItemToDo").value = item_val;
+    if (is_completed_val == "Y")
+    {
+        document.getElementById('completedRB').checked = true;
+    }
+    else
+    {
+        document.getElementById('notCompletedRB').checked = true;
+    }
+    document.getElementById("editCompletionDate").valueAsDate = new Date(completion_date_val);
+    document.getElementById("editListIdHidden").value = list_id_val;
+}
+
+</script>
