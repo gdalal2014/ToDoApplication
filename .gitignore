@@ -4,6 +4,11 @@
 *.cache
 .vs/Slalom To Do Application/config/applicationhost.config
 *.v2
-.vs/Slalom To Do Application/v17/.suo
+.vs\
 Slalom To Do Application/bin
 Slalom To Do Application/obj
+To Do Application Unit Tests/bin
+To Do Application Unit Tests/obj
+.vs/Slalom To Do Application/v17/.suo
+.vs/Slalom To Do Application/v17/TestStore/0/000.testlog
+.vs/Slalom To Do Application/v17/TestStore/0/testlog.manifest

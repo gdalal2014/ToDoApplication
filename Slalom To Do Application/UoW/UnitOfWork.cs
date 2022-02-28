@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data;
 using MySql.Data;
-using Slalom_To_Do_Application.Database;
+using Slalom_To_Do_Application.Repository;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
-namespace Slalom_To_Do_Application
+namespace Slalom_To_Do_Application.UoW
 {
     public class UnitOfWork : IUnitOfWork
     {

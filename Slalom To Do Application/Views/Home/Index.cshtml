@@ -1,7 +1,14 @@
 ﻿@{
+ if (!string.IsNullOrEmpty(ViewBag.alertMessage))
+{
+    <script type="text/javascript">
+        alert("@ViewBag.alertMessage");
+    </script>
+}
     ViewData["Title"] = "Home Page";
 }
-@using Slalom_To_Do_Application.Database
+@using Slalom_To_Do_Application.Repository
+@using Slalom_To_Do_Application.Entities;
 @using System.Collections.Generic
 
 @{

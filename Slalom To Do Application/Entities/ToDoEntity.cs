@@ -1,4 +1,4 @@
-﻿namespace Slalom_To_Do_Application.Database
+﻿namespace Slalom_To_Do_Application.Entities
 {
     public class ToDoEntity
     {

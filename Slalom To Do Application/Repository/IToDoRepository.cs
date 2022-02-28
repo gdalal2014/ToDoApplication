@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace Slalom_To_Do_Application.Database
+using Slalom_To_Do_Application.Entities;
+
+namespace Slalom_To_Do_Application.Repository
 {
     public interface IToDoRepository : IDisposable
     {

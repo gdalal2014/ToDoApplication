@@ -1,17 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Autofac;
-using System.Data;
-using System.Data.SqlClient;
-using Slalom_To_Do_Application.Database;
+using Slalom_To_Do_Application.UoW;
+using Slalom_To_Do_Application.Repository;
+using Slalom_To_Do_Application.BusinessLayer;
+using Autofac.Extensions.DependencyInjection;
 
 namespace Slalom_To_Do_Application
 {
@@ -23,12 +19,13 @@ namespace Slalom_To_Do_Application
         }
 
         public IConfiguration Configuration { get; }
+        public ILifetimeScope AutofacContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
+            services.AddMvc().AddControllersAsServices();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -37,7 +34,8 @@ namespace Slalom_To_Do_Application
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().WithParameter(new TypedParameter(typeof(string), dbConnectionString));
             builder.RegisterType<UserRepository>().As<IUserRepository>();
             builder.RegisterType<ToDoRepository>().As<IToDoRepository>();
-
+            builder.RegisterType<UserActionBusinessLayer>().As<IUserActionsBusinessLayer>();
+            builder.RegisterType<ToDoActionBusinessLayer>().As<IToDoActionBusinessLayer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +67,7 @@ namespace Slalom_To_Do_Application
                    name: "selectUser",
                    pattern: "{controller=Home}/{action=selectUser}/{id?}");
             });
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Slalom_To_Do_Application
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+  
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
