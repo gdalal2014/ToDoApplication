@@ -11,30 +11,34 @@ namespace Slalom_To_Do_Application
     {
         private IDbConnection newConnection;
         private IDbTransaction newTransaction;
-        private IUserRepository userRepository;
-        private IToDoRepository todoRepository;
+       // private IUserRepository userRepository;
+      //  private IToDoRepository todoRepository;
         public bool _disposed { get; private set; } = false;
 
         public UnitOfWork(string connectionString)
         {
 
             newConnection = new MySqlConnection(connectionString);
-            newConnection.Open();
+            
         }
 
-        public IUserRepository UserRepository
-        {
-            get { return userRepository ?? (userRepository = new UserRepository(newTransaction)); }
-        }
+        //public IUserRepository UserRepository
+        //{
+        //    get { return userRepository ?? (userRepository = new UserRepository(newTransaction)); }
+        //}
 
-        public IToDoRepository ToDoRepository
-        {
-            get { return todoRepository ?? (todoRepository = new ToDoRepository(newTransaction)); }
-        }
+        //public IToDoRepository ToDoRepository
+        //{
+        //    get { return todoRepository ?? (todoRepository = new ToDoRepository(newTransaction)); }
+        //}
 
-        public void Begin()
+        public void Connect() 
         {
-            newTransaction = newConnection.BeginTransaction();
+           newConnection.Open();
+        }
+        public IDbTransaction Begin()
+        {
+            return newTransaction = newConnection.BeginTransaction();
         }
         public void Commit()
         {

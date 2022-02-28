@@ -1,0 +1,7 @@
+
+*.dll
+*.editorconfig
+*.cache
+.vs/Slalom To Do Application/config/applicationhost.config
+*.v2
+.vs/Slalom To Do Application/v17/.suo

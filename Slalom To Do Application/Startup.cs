@@ -30,6 +30,16 @@ namespace Slalom_To_Do_Application
             services.AddControllersWithViews();
 
         }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            var dbConnectionString = Configuration.GetConnectionString("DatabaseConnectionString").ToString();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().WithParameter(new TypedParameter(typeof(string), dbConnectionString));
+            builder.RegisterType<UserRepository>().As<IUserRepository>();
+            builder.RegisterType<ToDoRepository>().As<IToDoRepository>();
+
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
