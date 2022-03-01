@@ -4,7 +4,7 @@ using Slalom_To_Do_Application.Entities;
 
 namespace Slalom_To_Do_Application.Repository
 {
-    public interface IUserRepository : IDisposable
+    public interface IUserRepository 
     {
         void Add(UserEntity entity);
         IEnumerable<UserEntity> All();

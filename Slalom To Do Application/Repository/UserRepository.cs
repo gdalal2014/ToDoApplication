@@ -10,15 +10,11 @@ using Slalom_To_Do_Application.Entities;
 
 namespace Slalom_To_Do_Application.Repository
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
-        private ILifetimeScope _autofacContainer { get;}
-        protected IDbTransaction _newTransaction { get; set; }
-        protected IDbConnection Connection { get { if (_newTransaction != null) { return _newTransaction.Connection; } else { return null; } } }
-
+        private ILifetimeScope _autofacContainer { get; }
         private IUnitOfWork _uow;
 
-        private bool _disposed  = false;
         public UserRepository(ILifetimeScope autofacContainer)
         {
             _autofacContainer = autofacContainer;
@@ -30,9 +26,9 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                return Connection.Query<UserEntity>(
-                "SELECT * FROM slalomtodolist.users_tbl",
+                var _newTransaction = _uow.Begin();
+                return _newTransaction.Connection.Query<UserEntity>(
+                "SELECT user_id, user_first_name, user_last_name, create_date, modified_date FROM slalomtodolist.users_tbl",
                 transaction: _newTransaction
             ).ToList();
             }
@@ -44,8 +40,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                entity.user_id = Connection.ExecuteScalar<string>(
+                var _newTransaction = _uow.Begin();
+                entity.user_id = _newTransaction.Connection.ExecuteScalar<string>(
                 "INSERT INTO slalomtodolist.users_tbl(user_first_name, user_last_name, create_date, modified_date) VALUES(@FirstName, @LastName, sysdate(), sysdate());",
                 param: new { FirstName = entity.user_first_name, LastName = entity.user_last_name },
                 transaction: _newTransaction
@@ -61,8 +57,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                Connection.Execute(
+                var _newTransaction = _uow.Begin();
+                _newTransaction.Connection.Execute(
                 "UPDATE slalomtodolist.users_tbl SET user_first_name = @FirstName, user_last_name = @LastName, modified_date = sysdate() WHERE user_Id = @UserId",
                 param: new { FirstName = entity.user_first_name, LastName = entity.user_last_name, UserId = entity.user_id },
                 transaction: _newTransaction
@@ -79,41 +75,15 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                return Connection.Query<UserEntity>(
-                "SELECT * FROM slalomtodolist.users_tbl WHERE user_id = @userID",
+                var _newTransaction = _uow.Begin();
+                return _newTransaction.Connection.Query<UserEntity>(
+                "SELECT user_id, user_first_name, user_last_name, create_date, modified_date FROM slalomtodolist.users_tbl WHERE user_id = @userID",
                 param: new { userID = userID },
                 transaction: _newTransaction
             );
-                }
-        }
-
-        public void Dispose()
-        {
-            dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (_newTransaction != null)
-                    {
-                        _newTransaction.Dispose();
-
-                    }
-                    if (Connection != null)
-                    {
-                        Connection.Dispose();
-                    }
-
-                }
-                _disposed = true;
             }
         }
+
     }
 }
 

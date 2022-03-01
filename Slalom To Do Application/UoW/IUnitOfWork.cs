@@ -6,8 +6,6 @@ namespace Slalom_To_Do_Application.UoW
 {
     public interface IUnitOfWork : IDisposable
     {
-        // IUserRepository UserRepository { get; }
-        //   IToDoRepository ToDoRepository { get; }
 
         void Connect();
         IDbTransaction Begin();

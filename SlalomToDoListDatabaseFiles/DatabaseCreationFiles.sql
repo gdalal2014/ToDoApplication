@@ -1,4 +1,5 @@
-create table slalomtodolist.users_tbl(
+CREATE DATABASE  IF NOT EXISTS `slalomtodolist` ;
+Create table slalomtodolist.users_tbl(
    user_id INT NOT NULL AUTO_INCREMENT,
    user_first_name VARCHAR(128) NOT NULL,
    user_last_name VARCHAR(128) NOT NULL,

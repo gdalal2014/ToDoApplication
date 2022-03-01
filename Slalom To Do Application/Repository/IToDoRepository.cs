@@ -4,7 +4,7 @@ using Slalom_To_Do_Application.Entities;
 
 namespace Slalom_To_Do_Application.Repository
 {
-    public interface IToDoRepository : IDisposable
+    public interface IToDoRepository 
     {
             void Add(ToDoEntity entity);
             IEnumerable<ToDoEntity> All();

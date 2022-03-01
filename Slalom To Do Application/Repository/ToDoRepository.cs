@@ -12,12 +12,8 @@ namespace Slalom_To_Do_Application.Repository
     public class ToDoRepository : IToDoRepository
     {
         private ILifetimeScope _autofacContainer { get; }
-        protected IDbTransaction _newTransaction { get; set; }
-        protected IDbConnection Connection { get { if (_newTransaction != null) { return _newTransaction.Connection; } else { return null; } } }
 
         private IUnitOfWork _uow;
-
-        private bool _disposed = false;
         public ToDoRepository(ILifetimeScope autofacContainer)
         {
             _autofacContainer = autofacContainer;
@@ -30,8 +26,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                return Connection.Query<ToDoEntity>(
+                var _newTransaction = _uow.Begin();
+                return _newTransaction.Connection.Query<ToDoEntity>(
                 "SELECT list_id, user_id, item, create_date, modified_date, is_completed, date_format(completion_date, '%m/%d/%Y') AS completion_date FROM slalomtodolist.list_tbl",
                 transaction: _newTransaction
             ).ToList();
@@ -44,8 +40,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                return Connection.Query<ToDoEntity>(
+                var _newTransaction = _uow.Begin();
+                return _newTransaction.Connection.Query<ToDoEntity>(
                 "SELECT list_id, user_id, item, create_date, modified_date, is_completed, date_format(completion_date, '%m/%d/%Y') AS completion_date FROM slalomtodolist.list_tbl WHERE user_id = @userId",
                 param: new { userId = user_id },
                 transaction: _newTransaction
@@ -59,8 +55,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                entity.list_id = Connection.ExecuteScalar<string>(
+                var _newTransaction = _uow.Begin();
+                entity.list_id = _newTransaction.Connection.ExecuteScalar<string>(
                 "INSERT INTO slalomtodolist.list_tbl(user_id, item, create_date, modified_date, is_completed, completion_date) VALUES(@userId, @item, sysdate(), sysdate(), @completed, STR_TO_DATE(@completionDate,'%Y-%m-%d %H:%i:%s'));",
 
                 param: new { userId = entity.user_id, item = entity.item, completed = entity.is_completed.ToUpper(), completionDate = entity.completion_date },
@@ -77,8 +73,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                Connection.Execute(
+                var _newTransaction = _uow.Begin();
+                _newTransaction.Connection.Execute(
                 "UPDATE slalomtodolist.list_tbl SET item = @item, modified_date = sysdate(), is_completed = @completed, completion_date = STR_TO_DATE(@completionDate,'%Y-%m-%d %H:%i:%s') WHERE user_id = @userId and list_id = @listId",
                 param: new { Item = entity.item, completed = entity.is_completed, completionDate = entity.completion_date, userId = entity.user_id, listId = entity.list_id },
                 transaction: _newTransaction
@@ -96,8 +92,8 @@ namespace Slalom_To_Do_Application.Repository
             {
                 _uow = scope.Resolve<IUnitOfWork>();
                 _uow.Connect();
-                _newTransaction = _uow.Begin();
-                Connection.Execute(
+                var _newTransaction = _uow.Begin();
+                _newTransaction.Connection.Execute(
                 "UPDATE slalomtodolist.list_tbl SET modified_date = sysdate(), is_completed = 'Y' WHERE user_id = @userId and list_id = @listId",
                 param: new { userId = entity.user_id, listId = entity.list_id },
                 transaction: _newTransaction
@@ -108,32 +104,6 @@ namespace Slalom_To_Do_Application.Repository
             }
         }
 
-        public void Dispose()
-        {
-            dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (_newTransaction != null)
-                    {
-                        _newTransaction.Dispose();
-
-                    }
-                    if (Connection != null)
-                    {
-                        Connection.Dispose();
-                    }
-
-                }
-                _disposed = true;
-            }
-        }
     }
 }
 

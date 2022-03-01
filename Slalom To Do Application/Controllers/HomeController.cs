@@ -188,7 +188,6 @@ namespace Slalom_To_Do_Application.Controllers
                 var listId = _results["todoListId"].ElementAt(0).ToString();
                 var userId = _results["userIdHiddenInput"].ElementAt(0).ToString();
 
-
                 var completeToDoEntity = new ToDoEntity();
                 completeToDoEntity.user_id = userId;
                 completeToDoEntity.list_id = listId;
